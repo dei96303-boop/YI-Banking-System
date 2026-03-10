@@ -14,7 +14,12 @@ jobs:
         with:
           python-version: '3.11'
 
-      # এই নতুন স্টেপটি আপনার আগের কাজের ডেটা সেভ করে রাখবে
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Cache Buildozer Directory
         uses: actions/cache@v3
         with:
@@ -26,13 +31,12 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          sudo apt install -y git zip unzip python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
           pip install --user --upgrade buildozer "cython<3.0.0" virtualenv
 
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
           buildozer android debug
         continue-on-error: false
 
