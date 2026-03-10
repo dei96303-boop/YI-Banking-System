@@ -3,7 +3,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
@@ -23,6 +23,7 @@ jobs:
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
+          # এই কমান্ডটি নিজে থেকে সব কনফিগার করে বিল্ড শুরু করবে
           buildozer android debug
 
       - name: Upload APK
