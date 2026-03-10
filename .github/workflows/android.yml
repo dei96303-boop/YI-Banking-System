@@ -20,19 +20,15 @@ jobs:
           sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
           pip install --user --upgrade buildozer cython virtualenv
 
-      - name: Accept Android SDK Licenses
-        run: |
-          yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
-
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
+          # এটি সরাসরি বিল্ডের সময় লাইসেন্স এক্সেপ্ট করতে বাধ্য করবে
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          buildozer android debug
+          yes | buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: YI-Bank-APK
           path: bin/*.apk
-          
