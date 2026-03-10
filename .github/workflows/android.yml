@@ -18,17 +18,19 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-          pip install --user --upgrade buildozer cython virtualenv
+          pip install --user --upgrade buildozer "cython<3.0.0" virtualenv
 
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          # এটি সরাসরি বিল্ডের সময় লাইসেন্স এক্সেপ্ট করতে বাধ্য করবে
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          yes | buildozer android debug
+          # এখানে log_level=2 দেওয়া হয়েছে যাতে বিস্তারিত এরর দেখা যায়
+          buildozer android debug
+        continue-on-error: false
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: YI-Bank-APK
           path: bin/*.apk
+          
