@@ -20,10 +20,14 @@ jobs:
           sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
           pip install --user --upgrade buildozer cython virtualenv
 
+      - name: Accept Android SDK Licenses
+        run: |
+          yes | sdkmanager --sdk_root=$ANDROID_HOME --licenses || true
+
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          # এই কমান্ডটি নিজে থেকে সব কনফিগার করে বিল্ড শুরু করবে
+          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
           buildozer android debug
 
       - name: Upload APK
