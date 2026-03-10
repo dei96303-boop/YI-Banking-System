@@ -20,6 +20,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y git zip unzip python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          pip install --user --upgrade buildozer "cython<3.0.0" virtualenv
+
+      - name: Install Android SDK Platform 31
+        run: |
+          yes | sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-31" "build-tools;31.0.0" "platform-tools"
+
       - name: Cache Buildozer Directory
         uses: actions/cache@v3
         with:
@@ -28,21 +38,16 @@ jobs:
           restore-keys: |
             buildozer-${{ runner.os }}-
 
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y git zip unzip python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-          pip install --user --upgrade buildozer "cython<3.0.0" virtualenv
-
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
+          export APP_ANDROID_ACCEPT_SDK_LICENSE=1
           buildozer android debug
         continue-on-error: false
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: YI-Bank-APK
+          name: YI-Bank-Advanced-APK
           path: bin/*.apk
           
