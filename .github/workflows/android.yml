@@ -28,27 +28,23 @@ jobs:
 
       - name: Install Android SDK Platform 31
         run: |
-          # এখানে সরাসরি পাথ ব্যবহার করা হয়েছে যাতে 'command not found' না আসে
+          # SDK ইন্সটল করা হচ্ছে
           yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} "platforms;android-31" "build-tools;31.0.0" "platform-tools"
-
-      - name: Cache Buildozer Directory
-        uses: actions/cache@v3
-        with:
-          path: .buildozer
-          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
-          restore-keys: |
-            buildozer-${{ runner.os }}-
 
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
+          # এই দুটি লাইন বিল্ডোজারকে গিটহাবের SDK ব্যবহার করতে বাধ্য করবে
+          export ANDROID_HOME=$ANDROID_SDK_ROOT
+          export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
+          
           buildozer android debug
         continue-on-error: false
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: YI-Bank-Final-APK
+          name: YI-Bank-Advanced-APK
           path: bin/*.apk
           
