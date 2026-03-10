@@ -28,7 +28,8 @@ jobs:
 
       - name: Install Android SDK Platform 31
         run: |
-          yes | sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-31" "build-tools;31.0.0" "platform-tools"
+          # এখানে সরাসরি পাথ ব্যবহার করা হয়েছে যাতে 'command not found' না আসে
+          yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --sdk_root=${ANDROID_SDK_ROOT} "platforms;android-31" "build-tools;31.0.0" "platform-tools"
 
       - name: Cache Buildozer Directory
         uses: actions/cache@v3
@@ -48,6 +49,6 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: YI-Bank-Advanced-APK
+          name: YI-Bank-Final-APK
           path: bin/*.apk
           
