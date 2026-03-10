@@ -14,6 +14,15 @@ jobs:
         with:
           python-version: '3.11'
 
+      # এই নতুন স্টেপটি আপনার আগের কাজের ডেটা সেভ করে রাখবে
+      - name: Cache Buildozer Directory
+        uses: actions/cache@v3
+        with:
+          path: .buildozer
+          key: buildozer-${{ runner.os }}-${{ hashFiles('buildozer.spec') }}
+          restore-keys: |
+            buildozer-${{ runner.os }}-
+
       - name: Install Dependencies
         run: |
           sudo apt update
@@ -24,7 +33,6 @@ jobs:
         run: |
           export PATH=$PATH:$HOME/.local/bin
           export APP_ANDROID_ACCEPT_SDK_LICENSE=1
-          # এখানে log_level=2 দেওয়া হয়েছে যাতে বিস্তারিত এরর দেখা যায়
           buildozer android debug
         continue-on-error: false
 
