@@ -30,7 +30,8 @@ class StartScreen(Screen):
         l.add_widget(Label(text="YI PRIVATE BANK", font_size='32sp', bold=True, color=(0,0.9,1,1)))
         for t, s in [("LOGIN", 'login'), ("CREATE ACCOUNT", 'terms'), ("ADMIN CONSOLE", 'admin_login')]:
             b = StyledButton(text=t)
-            if t == "ADMIN CONSOLE": b.background_color = (0.6, 0.1, 0.1, 1)
+            if t == "ADMIN CONSOLE": 
+                b.background_color = (0.6, 0.1, 0.1, 1)
             b.bind(on_press=lambda x, sc=s: setattr(self.manager, 'current', sc))
             l.add_widget(b)
         self.add_widget(l)
@@ -42,8 +43,11 @@ class LoginScreen(Screen):
         l.add_widget(Label(text="USER LOGIN", font_size='24sp'))
         self.uid = TextInput(hint_text="User ID", multiline=False, size_hint_y=None, height='45dp')
         self.pwd = TextInput(hint_text="Password", password=True, multiline=False, size_hint_y=None, height='45dp')
-        l.add_widget(self.uid); l.add_widget(self.pwd)
-        b = StyledButton(text="LOGIN"); b.bind(on_press=self.verify); l.add_widget(b)
+        l.add_widget(self.uid)
+        l.add_widget(self.pwd)
+        b = StyledButton(text="LOGIN")
+        b.bind(on_press=self.verify)
+        l.add_widget(b)
         self.add_widget(l)
 
     def verify(self, x):
@@ -63,10 +67,15 @@ class AdminLoginScreen(Screen):
         super().__init__(**kwargs)
         l = BoxLayout(orientation='vertical', padding=40, spacing=15)
         l.add_widget(Label(text="ADMIN LOGIN", color=(1,0,0,1)))
-        self.aid = TextInput(hint_text="Admin ID"); self.apw = TextInput(hint_text="Password", password=True)
-        l.add_widget(self.aid); l.add_widget(self.apw)
-        b = StyledButton(text="VERIFY"); b.bind(on_press=self.check); l.add_widget(b)
+        self.aid = TextInput(hint_text="Admin ID", multiline=False, size_hint_y=None, height='45dp')
+        self.apw = TextInput(hint_text="Password", password=True, multiline=False, size_hint_y=None, height='45dp')
+        l.add_widget(self.aid)
+        l.add_widget(self.apw)
+        b = StyledButton(text="VERIFY")
+        b.bind(on_press=self.check)
+        l.add_widget(b)
         self.add_widget(l)
+
     def check(self, x):
         if self.aid.text == "uitdei" and self.apw.text == "uit123":
             self.manager.current = 'admin_dash'
@@ -75,32 +84,45 @@ class TermsScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         l = BoxLayout(orientation='vertical', padding=20)
-        l.add_widget(Label(text="TERMS & CONDITIONS", font_size='22sp'))
+        l.add_widget(Label(text="TERMS & CONDITIONS", font_size='22sp', size_hint_y=None, height='50dp'))
         scroll = ScrollView()
         scroll.add_widget(Label(text="1. SHA-256 Security\n2. 50K Face ID Limit\n3. 10% Interest", size_hint_y=None, height='200dp'))
         l.add_widget(scroll)
         self.cb = CheckBox(size_hint_y=None, height='40dp')
         l.add_widget(self.cb)
-        b = StyledButton(text="ACCEPT"); b.bind(on_press=self.go); l.add_widget(b)
+        b = StyledButton(text="ACCEPT")
+        b.bind(on_press=self.go)
+        l.add_widget(b)
         self.add_widget(l)
+
     def go(self, x):
-        if self.cb.active: self.manager.current = 'register'
+        if self.cb.active: 
+            self.manager.current = 'register'
 
 class RegistrationScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         l = BoxLayout(orientation='vertical', padding=20, spacing=10)
-        self.n = TextInput(hint_text="Name"); self.m = TextInput(hint_text="Mobile"); self.p = TextInput(hint_text="Password", password=True)
-        l.add_widget(self.n); l.add_widget(self.m); l.add_widget(self.p)
-        b = StyledButton(text="REGISTER"); b.bind(on_press=self.save); l.add_widget(b)
+        self.n = TextInput(hint_text="Name", multiline=False, size_hint_y=None, height='45dp')
+        self.m = TextInput(hint_text="Mobile", multiline=False, size_hint_y=None, height='45dp')
+        self.p = TextInput(hint_text="Password", password=True, multiline=False, size_hint_y=None, height='45dp')
+        l.add_widget(self.n)
+        l.add_widget(self.m)
+        l.add_widget(self.p)
+        b = StyledButton(text="REGISTER")
+        b.bind(on_press=self.save)
+        l.add_widget(b)
         self.add_widget(l)
+
     def save(self, x):
         app = App.get_running_app()
         uid = str(random.randint(1000, 9999))
         hp = hashlib.sha256(self.p.text.encode()).hexdigest()
-        conn = sqlite3.connect(app.db_path); c = conn.cursor()
-        c.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?,?,?)", (uid,self.n.text,self.m.text,hp,"YIB"+uid,1000.0,0.0,'Active',0.0,0,0))
-        conn.commit(); conn.close()
+        conn = sqlite3.connect(app.db_path)
+        c = conn.cursor()
+        c.execute("INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?,?,?)", (uid, self.n.text, self.m.text, hp, "YIB"+uid, 1000.0, 0.0, 'Active', 0.0, 0, 0))
+        conn.commit()
+        conn.close()
         app.current_uid = uid
         self.manager.current = 'dashboard'
 
@@ -108,30 +130,39 @@ class DashboardScreen(Screen):
     def on_pre_enter(self):
         self.clear_widgets()
         app = App.get_running_app()
-        conn = sqlite3.connect(app.db_path); c = conn.cursor()
+        conn = sqlite3.connect(app.db_path)
+        c = conn.cursor()
         c.execute("SELECT name, balance, loan FROM users WHERE uid=?", (app.current_uid,))
         u = c.fetchone()
         conn.close()
         l = BoxLayout(orientation='vertical', padding=20, spacing=10)
-        l.add_widget(Label(text=f"Welcome {u[0]}\nBal: {u[1]:.2f} RS", font_size='22sp'))
+        if u:
+            l.add_widget(Label(text=f"Welcome {u[0]}\nBal: {u[1]:.2f} RS", font_size='22sp'))
         for t, s in [("WITHDRAW", 'withdraw'), ("LOGOUT", 'start')]:
-            b = StyledButton(text=t); b.bind(on_press=lambda x, sc=s: setattr(self.manager, 'current', sc)); l.add_widget(b)
+            b = StyledButton(text=t)
+            b.bind(on_press=lambda x, sc=s: setattr(self.manager, 'current', sc))
+            l.add_widget(b)
         self.add_widget(l)
 
 class WithdrawScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        l = BoxLayout(orientation='vertical', padding=30)
-        self.amt = TextInput(hint_text="Amount", input_filter='int')
+        l = BoxLayout(orientation='vertical', padding=30, spacing=15)
+        self.amt = TextInput(hint_text="Amount", input_filter='int', multiline=False, size_hint_y=None, height='45dp')
         l.add_widget(self.amt)
-        b = StyledButton(text="SEND"); b.bind(on_press=self.pay); l.add_widget(b)
+        b = StyledButton(text="SEND")
+        b.bind(on_press=self.pay)
+        l.add_widget(b)
         self.add_widget(l)
+
     def pay(self, x):
         app = App.get_running_app()
         val = float(self.amt.text) if self.amt.text else 0
-        conn = sqlite3.connect(app.db_path); c = conn.cursor()
+        conn = sqlite3.connect(app.db_path)
+        c = conn.cursor()
         c.execute("UPDATE users SET balance=balance-? WHERE uid=?", (val, app.current_uid))
-        conn.commit(); conn.close()
+        conn.commit()
+        conn.close()
         self.manager.current = 'dashboard'
 
 class AdminDashboard(Screen):
@@ -144,7 +175,6 @@ class YIBankApp(App):
     db_path = ""
 
     def build(self):
-        # অ্যান্ড্রয়েডের জন্য সঠিক পাথ সেট করা
         self.db_path = os.path.join(self.user_data_dir, 'yibank.db')
         self.init_db()
         sm = ScreenManager()
@@ -164,8 +194,9 @@ class YIBankApp(App):
         c.execute('''CREATE TABLE IF NOT EXISTS users 
                      (uid TEXT PRIMARY KEY, name TEXT, mobile TEXT, password TEXT, acc_no TEXT, 
                       balance REAL, loan REAL, status TEXT, total_debit REAL, is_verified INTEGER, is_approved INTEGER)''')
-        conn.commit(); conn.close()
+        conn.commit()
+        conn.close()
 
 if __name__ == '__main__':
     YIBankApp().run()
-    
+        
