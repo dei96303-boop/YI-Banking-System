@@ -5,6 +5,10 @@ jobs:
   build:
     runs-on: ubuntu-22.04
 
+    # Node.js 24 এর ওয়ার্নিং দূর করার জন্য এনভায়রনমেন্ট সেটআপ
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,12 +22,14 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y git zip unzip python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
+          # Cython ভার্সন নির্দিষ্ট করে দেওয়া হয়েছে বিল্ড এরর এড়াতে
           pip install --user --upgrade buildozer "cython<3.0.0" virtualenv
 
       - name: Build with Buildozer
         run: |
           export PATH=$PATH:$HOME/.local/bin
-          buildozer android debug
+          # বিল্ডোজার যেন কোনো ইনপুট না চেয়ে নিজে নিজেই সব ডাউনলোড করতে পারে
+          yes | buildozer android debug
         continue-on-error: false
 
       - name: Upload APK
